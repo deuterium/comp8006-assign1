@@ -40,5 +40,10 @@ iptables -A www-in -p tcp --dport 80 --sport 0:1024 -j DROP
 
 iptables -A other-in -p tcp --dport 0 -d localhost -j DROP
 
+iptables -A other-out -p udp --dport 53 -s localhost -j ACCEPT
+iptables -A other-in -p udp --dport 53 -d localhost -j ACCEPT
+
+iptables -A other-out -p udp --dport 67:68 -s localhost -j ACCEPT
+iptables -A other-in -p udp --sport 67:68 -d localhost -j ACCEPT
 
 
