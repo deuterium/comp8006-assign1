@@ -1,12 +1,34 @@
+#Basic personal firewal for Netfilter
+#Chris Wood - A00741285 - chriswood.ca@gmail.com
+################################################
+#Drops all connections by default
+#Permits inbound/outbound ssh
+#Permits inbound/outbound www
+#Drops inbound traffic to port 80 from sport < 1024
+#Drops all incoming packets from port 0 and incoming traffic to port 0
+#IP accounting rules set by user defined chains to monitor network traffic
+
 #user-configurable
 ALLOWED_PORTS = 22,80
 BLOCKED_PORTS = 0-1024
 
-#implementation_ DO NOT TOUCH
+#implementation__DO NOT TOUCH BELOW
 
-
+#clear out any previous chain rules
 iptables -F
+#set default polcies on the firewall to drop all incoming, outgoing and forwarding traffic
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
 iptables -P OUTPUT DROP
+
+#create user defined chains for IP accouting of www, ssh, and other traffic
+iptables -N ssh-in
+iptables -N ssh-out
+iptables -N www-in
+iptables -N www-out
+iptables -N other-in
+iptables -N other-out
+
+#Permit inbound and output traffic for allowed ports
+#iptables 
 
