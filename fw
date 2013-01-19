@@ -1,0 +1,12 @@
+#user-configurable
+ALLOWED_PORTS = 22,80
+BLOCKED_PORTS = 0-1024
+
+#implementation_ DO NOT TOUCH
+
+
+iptables -F
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
+
