@@ -9,8 +9,8 @@
 #IP accounting rules set by user defined chains to monitor network traffic
 
 #user-configurable
-ALLOWED_PORTS = 22,80
-BLOCKED_PORTS = 0-1024
+ALLOWED_PORTS=22,80
+BLOCKED_PORTS=0-1024
 
 #implementation__DO NOT TOUCH BELOW
 
@@ -30,5 +30,11 @@ iptables -N other-in
 iptables -N other-out
 
 #Permit inbound and output traffic for allowed ports
-#iptables 
+iptables -A ssh-in -p tcp -d localhost --dport 22 -j ACCEPT
+iptables -A ssh-out -p tcp -s localhost -d 0/0 --dport 22 -j ACCEPT
+
+iptables -A www-in -p tcp -d localhost --dport 80 -j ACCEPT
+iptables -A www-out -p tcp -s localhost -d 0/0 --dport 80 -j ACCEPT
+
+
 
