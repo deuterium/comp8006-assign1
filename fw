@@ -1,4 +1,4 @@
-#Basic personal firewal for Netfilter
+#Basic personal firewall for Netfilter
 #Chris Wood - A00741285 - chriswood.ca@gmail.com
 ################################################
 #Drops all connections by default
