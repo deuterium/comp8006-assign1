@@ -40,7 +40,9 @@ iptables -A other-out -j ACCEPT
 iptables -A INPUT -p tcp --sport 22 -j ssh-in
 iptables -A OUTPUT -p tcp --dport 22 -j ssh-out
 
-#allow www
+#allow www over 80 and 443 (SSL)
+iptables -A INPUT -p tcp --sport 443 -j www-in
+iptables -A OUTPUT -p tcp --dport 443 -j www-out
 iptables -A INPUT -p tcp --sport 80 -j www-in
 iptables -A OUTPUT -p tcp --dport 80 -j www-out
 
