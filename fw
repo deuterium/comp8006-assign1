@@ -1,3 +1,4 @@
+#!/bin/bash
 #Basic personal firewall for Netfilter
 #Chris Wood - A00741285 - chriswood.ca@gmail.com
 ################################################
@@ -20,21 +21,28 @@ iptables --flush
 iptables -X
 
 #create user defined chains for IP accouting of www, ssh, and other traffic
+#these chains should have their traffic accepted
 iptables -N ssh-in
 iptables -N ssh-out
+iptables -A ssh-in -j ACCEPT
+iptables -A ssh-out -j ACCEPT
+
 iptables -N www-in
 iptables -N www-out
+iptables -A www-in -j ACCEPT
+iptables -A www-out -j ACCEPT
+
 iptables -N other-in
 iptables -N other-out
 
 #Permit inbound and output traffic for allowed ports
-iptables -A ssh-in -p tcp -d localhost --dport 22 -j ACCEPT
-iptables -A ssh-out -p tcp -s localhost -d 0/0 --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp -d localhost --dport 22 -j ssh-in
+iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 22 -j ssh-out
 
-iptables -A www-in -p tcp -d localhost --dport 80 -j ACCEPT
-iptables -A www-out -p tcp -s localhost -d 0/0 --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp -d localhost --dport 80 -j www-in
+iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 80 -j www-out
 
-iptables -A www-in -p tcp --dport 80 --sport 0:1024 -j DROP
+iptables -A INPUT -p tcp --dport 80 --sport 0:1023 -j DROP
 
 iptables -A other-in -p tcp --dport 0 -d localhost -j DROP
 
