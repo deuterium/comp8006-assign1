@@ -9,10 +9,6 @@
 #Drops all incoming packets from port 0 and incoming traffic to port 0
 #IP accounting rules set by user defined chains to monitor network traffic
 
-#user-configurable
-ALLOWED_PORTS=22,80
-BLOCKED_PORTS=0-1024
-
 #implementation__DO NOT TOUCH BELOW
 
 #clear out any previous chain rules and chains
@@ -39,37 +35,41 @@ iptables -A other-out -j ACCEPT
 
 #Permit inbound and output traffic for allowed ports
 #allow SSH
-iptables -A INPUT -p tcp -d localhost --dport 22 -j ssh-in
-iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 22 -j ssh-out
-iptables -A INPUT -p tcp -d localhost --dport 22 -j ACCEPT
-iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp --sport 22 -j ssh-in
+iptables -A OUTPUT -p tcp --dport 22 -j ssh-out
 
 #allow www
-iptables -A INPUT -p tcp -d localhost --dport 80 -j www-in
-iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 80 -j www-out
-iptables -A INPUT -p tcp -d localhost --dport 80 -j ACCEPT
-iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --sport 80 -j www-in
+iptables -A OUTPUT -p tcp --dport 80 -j www-out
 
 #allow DNS traffic
-iptables -A OUTPUT -p udp --dport 53 -s localhost -j other-out
-iptables -A INPUT -p udp --dport 53 -d localhost -j other-in
-iptables -A OUTPUT -p udp --dport 53 -s localhost -j ACCEPT 
-iptables -A INPUT -p udp --dport 53 -d localhost -j ACCEPT
+iptables -A INPUT -p udp --sport 53 -j other-in
+iptables -A OUTPUT -p udp --dport 53 -j other-out
 
 #allow DHCP traffic
-iptables -A OUTPUT -p udp --dport 67:68 -s localhost -j other-out
-iptables -A INPUT -p udp --sport 67:68 -d localhost -j other-in
-iptables -A OUTPUT -p udp --dport 67:68 -s localhost -j other-out
-iptables -A INPUT -p udp --sport 67:68 -d localhost -j other-in
+iptables -A INPUT -p udp --sport 67:68 --dport 67:68 -j other-in
+iptables -A OUTPUT -p udp --dport 67:68 --sport 67:68 -j other-out
 
+#allow local loopback
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+
+#drop inbound to dport 80 from sport < 1024
 iptables -A INPUT -p tcp --dport 80 --sport 0:1023 -j DROP
-
-iptables -A INPUT -p tcp --dport 0 -d localhost -j DROP
-
+#drops incoming from sport 0 and to dport 0
+iptables -A INPUT -p tcp --dport 0 -j DROP
+iptables -A INPUT -p tcp --sport 0 -j DROP
+#allow icmp for ping/dns test
+iptables -A INPUT -p icmp -j ACCEPT
+iptables -A OUTPUT -p icmp -j ACCEPT
 
 #set default polcies on the firewall to drop all incoming, outgoing and forwarding traffic
-iptables -A INPUT -j DROP
-iptables -A FORWARD -j DROP
-iptables -A OUTPUT -j DROP
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
 
-iptables -L -v
+#iptables -A INPUT -j DROP
+#iptables -A FORWARD -j DROP
+#iptables -A OUTPUT -j DROP
+
+iptables -L
