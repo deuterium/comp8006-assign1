@@ -7,6 +7,8 @@
 #Permits inbound/outbound www
 #Drops inbound traffic to port 80 from sport < 1024
 #Drops all incoming packets from port 0 and incoming traffic to port 0
+#Drops all inbound SYN packets and inbound SYNFIN packets
+#DNS DHCP ICMP local loopback all allowed
 #IP accounting rules set by user defined chains to monitor network traffic
 
 #implementation__DO NOT TOUCH BELOW
@@ -50,15 +52,27 @@ iptables -A OUTPUT -p udp --dport 53 -j other-out
 iptables -A INPUT -p udp --sport 67:68 --dport 67:68 -j other-in
 iptables -A OUTPUT -p udp --dport 67:68 --sport 67:68 -j other-out
 
-#allow local loopback
+#allow loopback for localhost
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 
+#drop invalid inbound TCP packets
+iptables -A INPUT -p tcp --syn -j DROP #syn
+iptables -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP #urg
+iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP #xmas tree
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP #null
+#drop fragments
+iptables -A INPUT -f -j DROP
+
 #drop inbound to dport 80 from sport < 1024
 iptables -A INPUT -p tcp --dport 80 --sport 0:1023 -j DROP
+
 #drops incoming from sport 0 and to dport 0
 iptables -A INPUT -p tcp --dport 0 -j DROP
 iptables -A INPUT -p tcp --sport 0 -j DROP
+
 #allow icmp for ping/dns test
 iptables -A INPUT -p icmp -j ACCEPT
 iptables -A OUTPUT -p icmp -j ACCEPT
@@ -67,9 +81,5 @@ iptables -A OUTPUT -p icmp -j ACCEPT
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
 iptables -P OUTPUT DROP
-
-#iptables -A INPUT -j DROP
-#iptables -A FORWARD -j DROP
-#iptables -A OUTPUT -j DROP
 
 iptables -L
