@@ -34,21 +34,31 @@ iptables -A www-out -j ACCEPT
 
 iptables -N other-in
 iptables -N other-out
-iptables -N other-in -j ACCEPT
-iptables -N other-out -j ACCEPT
+iptables -A other-in -j ACCEPT
+iptables -A other-out -j ACCEPT
 
 #Permit inbound and output traffic for allowed ports
 #allow SSH
 iptables -A INPUT -p tcp -d localhost --dport 22 -j ssh-in
 iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 22 -j ssh-out
+iptables -A INPUT -p tcp -d localhost --dport 22 -j ACCEPT
+iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 22 -j ACCEPT
+
 #allow www
 iptables -A INPUT -p tcp -d localhost --dport 80 -j www-in
 iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 80 -j www-out
+iptables -A INPUT -p tcp -d localhost --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp -s localhost -d 0/0 --dport 80 -j ACCEPT
 
 #allow DNS traffic
 iptables -A OUTPUT -p udp --dport 53 -s localhost -j other-out
 iptables -A INPUT -p udp --dport 53 -d localhost -j other-in
+iptables -A OUTPUT -p udp --dport 53 -s localhost -j ACCEPT 
+iptables -A INPUT -p udp --dport 53 -d localhost -j ACCEPT
+
 #allow DHCP traffic
+iptables -A OUTPUT -p udp --dport 67:68 -s localhost -j other-out
+iptables -A INPUT -p udp --sport 67:68 -d localhost -j other-in
 iptables -A OUTPUT -p udp --dport 67:68 -s localhost -j other-out
 iptables -A INPUT -p udp --sport 67:68 -d localhost -j other-in
 
@@ -58,6 +68,8 @@ iptables -A INPUT -p tcp --dport 0 -d localhost -j DROP
 
 
 #set default polcies on the firewall to drop all incoming, outgoing and forwarding traffic
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT DROP
+iptables -A INPUT -j DROP
+iptables -A FORWARD -j DROP
+iptables -A OUTPUT -j DROP
+
+iptables -L -v
