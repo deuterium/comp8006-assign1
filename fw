@@ -88,9 +88,4 @@ iptables -A INPUT -p tcp --sport 0 -j DROP
 #iptables -A INPUT -p icmp -j ACCEPT
 #iptables -A OUTPUT -p icmp -j ACCEPT
 
-#set default polcies on the firewall to drop all incoming, outgoing and forwarding traffic
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT DROP
-
 iptables -L
