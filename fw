@@ -18,6 +18,11 @@ iptables -F
 iptables --flush
 iptables -X
 
+#set default polcies on the firewall to drop all incoming, outgoing and forwarding traffic
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
+
 #create user defined chains for IP accouting of www, ssh, and other traffic
 #these chains should have their traffic accepted
 iptables -N ssh-in
@@ -63,6 +68,10 @@ iptables -A INPUT -p tcp --syn -j DROP #syn
 iptables -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP #urg
 iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
 iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+iptables -A INPUT -p tcp --tcp-flags SYN,FIN,PSH SYN,FIN,PSH -j DROP
+iptables -A INPUT -p tcp --tcp-flags ALL ACK,URG -j DROP #SYN,FIN,RST,PSH
+iptables -A INPUT -p tcp --tcp-flags FIN FIN -j DROP
+iptables -A INPUT -p tcp --tcp-flags FIN,URG,PSH FIN,URG,PSH -j DROP
 iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP #xmas tree
 iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP #null
 #drop fragments
