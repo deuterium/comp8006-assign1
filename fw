@@ -60,8 +60,8 @@ iptables -A INPUT -p udp --sport 67:68 --dport 67:68 -j other-in
 iptables -A OUTPUT -p udp --dport 67:68 --sport 67:68 -j other-out
 
 #allow loopback for localhost
-iptables -A INPUT -i lo -j ACCEPT
-iptables -A OUTPUT -o lo -j ACCEPT
+#iptables -A INPUT -i lo -j ACCEPT
+#iptables -A OUTPUT -o lo -j ACCEPT
 
 #drop invalid inbound TCP packets
 iptables -A INPUT -p tcp --syn -j DROP #syn
@@ -85,8 +85,8 @@ iptables -A INPUT -p tcp --dport 0 -j DROP
 iptables -A INPUT -p tcp --sport 0 -j DROP
 
 #allow icmp for ping/dns test
-iptables -A INPUT -p icmp -j ACCEPT
-iptables -A OUTPUT -p icmp -j ACCEPT
+#iptables -A INPUT -p icmp -j ACCEPT
+#iptables -A OUTPUT -p icmp -j ACCEPT
 
 #set default polcies on the firewall to drop all incoming, outgoing and forwarding traffic
 iptables -P INPUT DROP
