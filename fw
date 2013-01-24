@@ -18,11 +18,6 @@ iptables -F
 iptables --flush
 iptables -X
 
-#set default polcies on the firewall to drop all incoming, outgoing and forwarding traffic
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT DROP
-
 #create user defined chains for IP accouting of www, ssh, and other traffic
 #these chains should have their traffic accepted
 iptables -N ssh-in
@@ -83,6 +78,11 @@ iptables -A INPUT -p tcp --dport 80 --sport 0:1023 -j DROP
 #drops incoming from sport 0 and to dport 0
 iptables -A INPUT -p tcp --dport 0 -j DROP
 iptables -A INPUT -p tcp --sport 0 -j DROP
+
+#set default polcies on the firewall to drop all incoming, outgoing and forwarding traffic
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
 
 #allow icmp for ping/dns test
 #iptables -A INPUT -p icmp -j ACCEPT
