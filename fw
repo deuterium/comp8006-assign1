@@ -61,7 +61,7 @@ iptables -A OUTPUT -p udp --dport 67:68 --sport 67:68 -j other-out
 #iptables -A OUTPUT -o lo -j ACCEPT
 
 #drop invalid inbound TCP packets
-#iptables -A INPUT -p tcp --syn -j DROP #syn
+iptables -A INPUT -p tcp --syn -j DROP #syn
 iptables -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP #urg
 iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
 iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
