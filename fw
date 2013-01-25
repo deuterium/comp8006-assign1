@@ -38,9 +38,9 @@ iptables -A other-out -j ACCEPT
 #Permit inbound and output traffic for allowed ports
 #allow SSH
 iptables -A INPUT -p tcp --sport 22 -j ssh-in
-iptables -A INPUT -p tcp --dport 22 -j ssh-in
+#iptables -A INPUT -p tcp --dport 22 -j ssh-in
 iptables -A OUTPUT -p tcp --dport 22 -j ssh-out
-iptables -A OUTPUT -p tcp --sport 22 -j ssh-out
+#iptables -A OUTPUT -p tcp --sport 22 -j ssh-out
 
 #allow www over 80 and 443 (SSL)
 iptables -A INPUT -p tcp --sport 443 -j www-in
