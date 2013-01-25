@@ -37,10 +37,11 @@ iptables -A other-out -j ACCEPT
 
 #Permit inbound and output traffic for allowed ports
 #allow SSH
-iptables -A INPUT -p tcp --sport 22 -j ssh-in
-#iptables -A INPUT -p tcp --dport 22 -j ssh-in
-iptables -A OUTPUT -p tcp --dport 22 -j ssh-out
-#iptables -A OUTPUT -p tcp --sport 22 -j ssh-out
+iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ssh-in
+iptables -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ssh-in
+
+iptables -A INPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ssh-out
+iptables -A OUTPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ssh-out
 
 #allow www over 80 and 443 (SSL)
 iptables -A INPUT -p tcp --sport 443 -j www-in
@@ -61,7 +62,7 @@ iptables -A OUTPUT -p udp --dport 67:68 --sport 67:68 -j other-out
 #iptables -A OUTPUT -o lo -j ACCEPT
 
 #drop invalid inbound TCP packets
-iptables -A INPUT -p tcp --syn -j DROP #syn
+#iptables -A INPUT -p tcp --syn -j DROP #syn
 iptables -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP #urg
 iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
 iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
